@@ -1,0 +1,16 @@
+---
+import DocLayout from '../layouts/DocLayout.astro';
+
+export async function getStaticPaths() {
+  const { getCollection } = await import('astro:content');
+  const entries = await getCollection('docs');
+  return entries.map((entry) => ({
+    params: { slug: entry.id },
+  }));
+}
+
+const { slug } = Astro.params;
+const slugPath = Array.isArray(slug) ? slug.join('/') : (slug ?? '');
+---
+
+<DocLayout slug={slugPath} />

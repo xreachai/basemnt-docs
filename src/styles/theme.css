@@ -1,0 +1,410 @@
+/* base/mnt.ai docs — theme tokens and primitives.
+   Values are copied verbatim from basemnt-landing (DESIGN-HANDOFF.md is the
+   source of truth; do not substitute). */
+
+@font-face {
+  font-family: 'Fixedsys Excelsior';
+  src: local('Fixedsys Excelsior 3.01'), local('FixedsysExcelsior301'),
+       url('https://cdn.jsdelivr.net/gh/kika/fixedsys-excelsior@master/fsex300-webfont.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* Color tokens — pure black base, phosphor green accent */
+  --bg: #000000;
+  --bg-elevated: #070a08;
+  --surface: #0a0d0b;
+  --fg: #e9edea;
+  --fg-muted: #8b948e;
+  --fg-dim: #4e5651;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-hover: rgba(255, 255, 255, 0.16);
+  --accent-green: #34d399;
+  --accent-green-deep: #10b981;
+  --accent-green-bright: #8df5c6;
+  --accent-red: #ef4444;
+  --accent-yellow: #f59e0b;
+  --green-glow: rgba(52, 211, 153, 0.14);
+  --green-dim: rgba(52, 211, 153, 0.35);
+
+  --font-sans: Inter, system-ui, -apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+  --font-pixel: 'Fixedsys Excelsor', var(--font-mono);
+
+  --radius: 6px;
+  --radius-sm: 3px;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --content-width: 760px;
+}
+
+.brand-base { color: var(--fg); }
+.brand-mnt { color: var(--accent-green); }
+.brand-ai { color: var(--fg); }
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 80px;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--fg);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+::selection { background: var(--accent-green); color: #000; }
+
+/* Film grain — extremely subtle (landing parity) */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9998;
+  opacity: 0.02;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+a { color: var(--accent-green); text-decoration: none; }
+a:hover { color: var(--accent-green-bright); }
+
+/* ---- Typography ---- */
+h1, .h1 {
+  font-family: var(--font-sans);
+  font-size: clamp(30px, 4vw, 44px);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+}
+
+h2 {
+  font-family: var(--font-sans);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+  margin-top: 3rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 2rem;
+}
+
+p, li { color: var(--fg-muted); font-size: 15px; }
+p + p, ul + p, ol + p, pre + p { margin-top: 0.75rem; }
+strong { color: var(--fg); font-weight: 600; }
+em { color: var(--fg); }
+
+ul, ol { padding-left: 1.4rem; margin: 0.75rem 0; }
+li + li { margin-top: 0.3rem; }
+li::marker { color: var(--fg-dim); }
+
+/* Mono section label — [ 04 ] — Api Reference style */
+.label {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent-green);
+  margin-bottom: 0.75rem;
+}
+
+code {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  color: var(--accent-green-bright);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.1em 0.35em;
+}
+
+/* Code blocks — shared shell around <pre><code> */
+.doc-code {
+  position: relative;
+  margin: 1rem 0;
+}
+
+.doc-code pre {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--fg);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem 1.1rem;
+  overflow-x: auto;
+  tabular-nums: normal;
+}
+
+.doc-code pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  color: inherit;
+  font-size: inherit;
+}
+
+/* terminal header bar for code blocks */
+.doc-code.with-header pre { border-radius: 0 0 var(--radius) var(--radius); margin-top: 30px; }
+.code-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--fg-dim);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-bottom: none;
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+.code-header .dots { display: flex; gap: 6px; margin-right: 0.25rem; }
+.code-header .dots i {
+  width: 9px; height: 9px; border-radius: 50%;
+  background: var(--fg-dim); display: inline-block;
+}
+.code-header .dots i:nth-child(1) { background: var(--accent-red); }
+.code-header .dots i:nth-child(2) { background: var(--accent-yellow); }
+.code-header .dots i:nth-child(3) { background: var(--accent-green); }
+.code-header .method {
+  color: var(--accent-green);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+.code-header .path { color: var(--fg-muted); }
+
+.copy-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  z-index: 2;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 4px 8px;
+  cursor: pointer;
+  transition: color 0.15s var(--ease-out), border-color 0.15s var(--ease-out);
+}
+.copy-btn:hover, .copy-btn:focus-visible {
+  color: var(--accent-green);
+  border-color: var(--green-dim);
+  outline: none;
+}
+.doc-code.with-header .copy-btn { top: 35px; }
+
+/* Syntax colors (landing API-block palette) */
+.doc-code .kw { color: var(--accent-green-bright); }
+.doc-code .str { color: var(--accent-green); }
+.doc-code .num { color: var(--accent-yellow); }
+.doc-code .cmt { color: var(--fg-dim); font-style: italic; }
+.doc-code .fn { color: var(--accent-green-bright); }
+
+/* ---- Tables ---- */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 14px;
+}
+th {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-align: left;
+  color: var(--fg-dim);
+  font-weight: 500;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--border-hover);
+}
+td {
+  padding: 0.55rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--fg-muted);
+  vertical-align: top;
+}
+td:first-child code { white-space: nowrap; }
+tbody tr { transition: background 0.15s var(--ease-out); }
+tbody tr:hover { background: rgba(255, 255, 255, 0.02); }
+
+/* ---- Buttons (landing parity) ---- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: var(--fg);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 9px 16px;
+  cursor: pointer;
+  transition: border-color 0.2s var(--ease-out), color 0.2s var(--ease-out);
+}
+.btn:hover { border-color: var(--border-hover); color: var(--accent-green-bright); }
+
+.btn-primary {
+  background: var(--accent-green);
+  color: #000;
+  border-color: var(--accent-green);
+}
+.btn-primary:hover {
+  background: var(--accent-green);
+  color: #000;
+  box-shadow: 0 0 24px var(--green-glow), 0 0 40px rgba(52, 211, 153, 0.2);
+}
+
+a:focus-visible, button:focus-visible {
+  outline: 2px solid var(--accent-green);
+  outline-offset: 2px;
+}
+
+/* ---- Pill badge (landing parity) ---- */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--fg-muted);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 6px 14px;
+}
+.pill .dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent-green);
+  animation: blink 2s infinite;
+}
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+/* ---- HUD corner brackets (landing parity) ---- */
+.corners { position: relative; }
+.corners::before,
+.corners::after {
+  content: '';
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-color: var(--green-dim);
+  border-style: solid;
+  z-index: 3;
+  pointer-events: none;
+  transition: border-color 0.25s;
+}
+.corners::before { top: -1px; left: -1px; border-width: 1px 0 0 1px; }
+.corners::after { bottom: -1px; right: -1px; border-width: 0 1px 1px 0; }
+.corners:hover::before,
+.corners:hover::after { border-color: var(--accent-green); }
+
+/* ---- Callouts ---- */
+.callout {
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--accent-green);
+  background: var(--bg-elevated);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 1rem;
+  margin: 1rem 0;
+  font-size: 14px;
+  color: var(--fg-muted);
+}
+.callout .callout-title {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-green);
+  margin-bottom: 0.35rem;
+}
+.callout.warn { border-left-color: var(--accent-yellow); }
+.callout.warn .callout-title { color: var(--accent-yellow); }
+
+/* ---- Page layout ---- */
+.page-grid {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 24px;
+  gap: 48px;
+}
+
+.main {
+  min-width: 0;
+  padding: 40px 0 96px;
+  max-width: var(--content-width);
+}
+
+.doc-title-block { margin-bottom: 2rem; }
+.doc-title-block h1 { margin-bottom: 0.5rem; }
+.doc-title-block .doc-desc { font-size: 15px; color: var(--fg-muted); max-width: 62ch; }
+
+/* Endpoint method chips */
+.endpoint {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  margin: 0.25rem 0 0.75rem;
+}
+.endpoint .method {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: #000;
+  background: var(--accent-green);
+  border-radius: var(--radius-sm);
+  padding: 3px 8px;
+}
+.endpoint .path { color: var(--fg); }
+
+hr { border: none; border-top: 1px solid var(--border); margin: 2.5rem 0; }
+
+@media (max-width: 900px) {
+  .page-grid { grid-template-columns: 1fr; gap: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  html { scroll-behavior: auto; }
+}

@@ -1,0 +1,133 @@
+---
+import { getCollection, render } from 'astro:content';
+import DocLayout from '../layouts/DocLayout.astro';
+import Code from '../components/Code.astro';
+
+const entries = (await getCollection('docs')).sort(
+  (a, b) => (a.data.section ?? 'zz') - (b.data.section ?? 'zz') || a.data.order - b.data.order,
+);
+const quickstart = entries.find((e) => e.id === 'quickstart')!;
+const { Content } = await render(quickstart);
+---
+
+<DocLayout>
+  <section class="hero">
+    <span class="pill"><span class="dot"></span>base/mnt.ai documentation</span>
+    <h1 class="h1">
+      <span class="display-inline">Multiple models.</span><br />
+      <span class="green">One endpoint.</span>
+    </h1>
+    <p class="hero-sub">
+      The base/mnt.ai router speaks both the OpenAI and Anthropic wire formats. Point any SDK,
+      coding agent, or CLI at it with an env var — no code changes required.
+    </p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="/quickstart/">Quickstart →</a>
+      <a class="btn" href="/api-reference/chat-completions/">API Reference</a>
+      <a class="btn" href="/agents/claude-code/">Connect Coding Agents</a>
+    </div>
+  </section>
+
+  <section class="featured">
+    <div class="card corners">
+      <div class="label">[ 01 ] — Quickstart</div>
+      <h2>First request in 30 seconds</h2>
+      <p>Get a key, set one env var, make your first chat completion.</p>
+      <a class="btn" href="/quickstart/">Read →</a>
+    </div>
+    <div class="card corners">
+      <div class="label">[ 02 ] — API Reference</div>
+      <h2>OpenAI + Anthropic compatible</h2>
+      <p><code class="inline">/v1/chat/completions</code>, <code class="inline">/v1/messages</code>,
+        <code class="inline">/v1/models</code>, and token counting — fully documented.</p>
+      <a class="btn" href="/api-reference/chat-completions/">Read →</a>
+    </div>
+    <div class="card corners">
+      <div class="label">[ 03 ] — Coding Agents</div>
+      <h2>Every harness, one base URL</h2>
+      <p>Claude Code, Codex, OpenCode, Pi, omp — swap their upstream with env vars or a bash alias.</p>
+      <a class="btn" href="/agents/claude-code/">Read →</a>
+    </div>
+  </section>
+
+  <section class="snippets">
+    <div class="label">[ 00 ] — The idea</div>
+    <h2>Point your tools here</h2>
+    <p>
+      Every base/mnt.ai endpoint accepts the same key. Whatever speaks OpenAI or Anthropic
+      protocol works unchanged — just change the base URL.
+    </p>
+    <Code lang="bash" title="any OpenAI-compatible client">{`export OPENAI_BASE_URL=https://api.basemnt.ai/v1
+export OPENAI_API_KEY=sk-your-key`}</Code>
+    <Code lang="bash" title="any Anthropic-compatible client">{`export ANTHROPIC_BASE_URL=https://api.basemnt.ai
+export ANTHROPIC_API_KEY=sk-your-key`}</Code>
+    <div class="snippet-cta">
+      <a class="btn btn-primary" href="/agents/">All agent guides →</a>
+    </div>
+  </section>
+
+  <div class="hidden-render">
+    <Content />
+  </div>
+</DocLayout>
+
+<style>
+  .hero {
+    padding: 72px 0 48px;
+  }
+  .hero .pill { margin-bottom: 1.25rem; }
+  .hero .h1 { font-size: clamp(34px, 5vw, 52px); margin: 0 0 1rem; }
+  .hero .green {
+    color: var(--accent-green);
+    text-shadow: 0 0 40px rgba(52, 211, 153, 0.45);
+  }
+  .hero-sub {
+    font-size: 16px;
+    color: var(--fg-muted);
+    max-width: 56ch;
+  }
+  .hero-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
+  }
+
+  .featured {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 24px 0;
+  }
+  @media (min-width: 780px) {
+    .featured { grid-template-columns: repeat(3, 1fr); }
+  }
+  .card {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    transition: border-color 0.25s var(--ease-out);
+  }
+  .card:hover { border-color: var(--border-hover); }
+  .card p { font-size: 13.5px; flex-grow: 1; }
+  .card .btn { align-self: flex-start; margin-top: 0.75rem; }
+  .card :global(code.inline) {
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    color: var(--accent-green-bright);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 0.1em 0.35em;
+  }
+
+  .snippets { padding: 48px 0 0; }
+  .snippets p { max-width: 60ch; }
+  .snippet-cta { margin-top: 0.5rem; }
+
+  .hidden-render { display: none; }
+</style>

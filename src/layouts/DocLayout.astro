@@ -1,0 +1,276 @@
+---
+import { getCollection, render } from 'astro:content';
+import Code from '../components/Code.astro';
+import BaseLayout from './BaseLayout.astro';
+interface Props {
+  slug?: string;
+}
+
+
+const { slug } = Astro.props;
+
+const entries = (await getCollection('docs')).sort(
+  (a, b) => (a.data.section ?? 'zz') - (b.data.section ?? 'zz') || a.data.order - b.data.order,
+);
+
+const currentIndex = slug ? entries.findIndex((e) => e.id === slug) : -1;
+const entry = slug ? entries[currentIndex] : undefined;
+if (slug && !entry) {
+  return Astro.redirect('/404');
+}
+
+const { Content } = entry ? await render(entry, { components: { Code } }) : { Content: null };
+const prev = entry ? entries[currentIndex - 1] : undefined;
+const next = entry ? entries[currentIndex + 1] : undefined;
+
+const sections = [
+  { key: 'start', label: '[ 01 ] — Start' },
+  { key: 'api', label: '[ 02 ] — Api Reference' },
+  { key: 'agents', label: '[ 03 ] — Coding Agents' },
+];
+const sectioned = sections.map((s) => ({
+  ...s,
+  items: entries.filter((e) => (e.data.section ?? 'zz') === s.key),
+}));
+
+const title = entry ? `${entry.data.title} — base/mnt.ai docs` : 'base/mnt.ai docs';
+const description = entry?.data.description ?? 'base/mnt.ai — hosted inference API documentation';
+---
+
+<BaseLayout title={title} description={description}>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="/" class="nav-logo" aria-label="base/mnt.ai home">
+        <span class="brand-base">base</span><span class="brand-mnt">/mnt</span><span class="brand-ai">.ai</span>
+      </a>
+      <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/quickstart/">Quickstart</a>
+        <a href="/api-reference/chat-completions/">API</a>
+        <a href="/agents/claude-code/">Agents</a>
+      </div>
+      <a href="https://basemnt.ai" class="btn btn-primary nav-cta">Get an API Key</a>
+    </div>
+  </nav>
+
+  <div class="page-grid">
+    <aside class="sidebar" aria-label="Docs navigation">
+      {
+        sectioned.map((s) =>
+          s.items.length > 0 ? (
+            <div class="side-section">
+              <div class="label">{s.label}</div>
+              <ul>
+                {s.items.map((e) => (
+                  <li>
+                    <a
+                      href={`/${e.id}/`}
+                      class:list={{ active: entry?.id === e.id }}
+                      aria-current={entry?.id === e.id ? 'page' : undefined}
+                    >
+                      {e.data.title}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null,
+        )
+      }
+    </aside>
+
+    <main class="main">
+      {
+        entry && (
+          <article>
+            <header class="doc-title-block corners">
+              <span class="label">/ {entry.id.replace(/\//g, ' / ')}</span>
+              <h1>{entry.data.title}</h1>
+              {entry.data.description && <p class="doc-desc">{entry.data.description}</p>}
+              {(entry.data.method || entry.data.path) && (
+                <div class="endpoint">
+                  {entry.data.method && <span class="method">{entry.data.method}</span>}
+                  {entry.data.path && <span class="path">{entry.data.path}</span>}
+                </div>
+              )}
+            </header>
+            {Content && <div class="doc-body"><Content /></div>}
+            <nav class="pager">
+              {prev ? (
+                <a class="btn pager-prev" href={`/${prev.id}/`}>
+                  <span class="pager-dir">← prev</span>
+                  <span>{prev.data.title}</span>
+                </a>
+              ) : (
+                <span />
+              )}
+              {next && (
+                <a class="btn pager-next" href={`/${next.id}/`}>
+                  <span class="pager-dir">next →</span>
+                  <span>{next.data.title}</span>
+                </a>
+              )}
+            </nav>
+          </article>
+        )
+      }
+      <slot />
+    </main>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <span class="pixel-brand" aria-hidden="true">base/mnt.ai</span>
+      <span class="footer-note">Hosted inference. Zero data retention. Never trained on your data.</span>
+      <span class="footer-note"><a href="https://basemnt.ai">basemnt.ai</a></span>
+    </div>
+  </footer>
+</BaseLayout>
+
+<style>
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(0, 0, 0, 0.82);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-inner {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 24px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+  .nav-logo {
+    font-family: var(--font-pixel);
+    font-size: 18px;
+    letter-spacing: 0.02em;
+  }
+  .nav-links {
+    display: flex;
+    gap: 4px;
+    margin-left: auto;
+    flex-wrap: wrap;
+  }
+  .nav-links a {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--fg-muted);
+    padding: 6px 10px;
+    transition: color 0.2s var(--ease-out);
+  }
+  .nav-links a:hover { color: var(--accent-green); }
+  .nav-cta { white-space: nowrap; }
+  @media (max-width: 720px) {
+    .nav-links { display: none; }
+  }
+
+  .sidebar {
+    padding: 40px 0 96px;
+    border-right: 1px solid var(--border);
+    position: sticky;
+    top: 60px;
+    align-self: start;
+    max-height: calc(100vh - 60px);
+    overflow-y: auto;
+    scrollbar-width: thin;
+  }
+  .side-section + .side-section { margin-top: 2rem; }
+  .sidebar ul { list-style: none; padding: 0; margin: 0; }
+  .sidebar li { margin: 0; }
+  .sidebar a {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    color: var(--fg-muted);
+    padding: 7px 10px;
+    border-radius: var(--radius-sm);
+    border: 1px solid transparent;
+    transition: color 0.15s var(--ease-out), border-color 0.15s var(--ease-out);
+  }
+  .sidebar a:hover { color: var(--fg); }
+  .sidebar a.active {
+    color: var(--accent-green);
+    border-color: var(--green-dim);
+    background: rgba(52, 211, 153, 0.04);
+  }
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+  }
+
+  .doc-body :global(h2) { scroll-margin-top: 84px; }
+  .doc-body :global(h3) { scroll-margin-top: 84px; }
+
+  .pager {
+    margin-top: 4rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .pager a {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-width: 46%;
+  }
+  .pager .pager-dir {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--fg-dim);
+  }
+  .pager .pager-next { margin-left: auto; text-align: right; align-items: flex-end; }
+
+  .footer {
+    border-top: 1px solid var(--border);
+    background: var(--bg-elevated);
+  }
+  .footer-inner {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 28px 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .pixel-brand {
+    font-family: var(--font-pixel);
+    font-size: 15px;
+    color: var(--fg-muted);
+  }
+  .footer-note {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--fg-dim);
+    letter-spacing: 0.06em;
+  }
+  .footer-note a { color: var(--fg-muted); }
+  .footer-note a:hover { color: var(--accent-green); }
+</style>
+
+<script>
+  // Copy buttons on .doc-code blocks. Each button copies the <pre> text.
+  document.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest('.copy-btn');
+    if (!btn) return;
+    const block = btn.closest('.doc-code');
+    const code = block?.querySelector('pre');
+    if (!code) return;
+    navigator.clipboard.writeText(code.textContent ?? '').then(() => {
+      const original = btn.textContent;
+      btn.textContent = 'copied';
+      setTimeout(() => {
+        btn.textContent = original;
+      }, 1500);
+    });
+  });
+</script>

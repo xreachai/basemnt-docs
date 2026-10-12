@@ -1,0 +1,23 @@
+---
+interface Props {
+  title?: string;
+  method?: string;
+  path?: string;
+  lang?: string;
+}
+
+const { title, method, path, lang } = Astro.props;
+---
+
+<div class:list={['doc-code', { 'with-header': title || method || path }]}>
+  {(title || method || path) && (
+    <div class="code-header">
+      <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+      {method && <span class="method">{method}</span>}
+      {path && <span class="path">{path}</span>}
+      {title && <span class="title">{title}</span>}
+    </div>
+  )}
+  <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
+  <pre class={lang ? `language-${lang}` : undefined}><slot /></pre>
+</div>

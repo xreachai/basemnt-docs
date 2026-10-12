@@ -1,0 +1,27 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="404 — base/mnt.ai docs" description="Page not found">
+  <main class="nf">
+    <span class="label">[ ERR ] — 404</span>
+    <h1 class="h1">Not found.</h1>
+    <p>This page isn't in the basement.</p>
+    <div class="nf-actions">
+      <a class="btn btn-primary" href="/">Docs home →</a>
+      <a class="btn" href="/quickstart/">Quickstart</a>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .nf {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 96px 24px;
+    text-align: left;
+  }
+  .nf .label { color: var(--accent-red); }
+  .nf p { color: var(--fg-muted); margin-top: 0.5rem; }
+  .nf-actions { display: flex; gap: 12px; margin-top: 1.5rem; flex-wrap: wrap; }
+</style>
