@@ -9,11 +9,10 @@
     "deploy": "wrangler pages deploy dist"
   },
   "dependencies": {
-    "astro": "^5.16.2",
-    "unist-util-visit": "^5.1.0"
+    "astro": "^5.16.2"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20260607.0",
+    "unist-util-visit": "^5.0.0",
     "wrangler": "^4.30.0"
   }
 }
