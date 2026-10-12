@@ -72,12 +72,14 @@ function buildChrome(node: CodeNode, meta: Record<string, string>): ElementConte
       text('copy'),
     ]),
   );
+  // The language class must live on <code>: Astro's Shiki pass reads it from
+  // there, and it replaces the whole <pre> with its own highlighted markup.
   inner.push(
-    el(
-      'pre',
-      node.lang ? { className: [`language-${node.lang}`] } : {},
-      [el('code', {}, [text(node.value ? node.value + '\n' : '')])],
-    ),
+    el('pre', {}, [
+      el('code', node.lang ? { className: [`language-${node.lang}`] } : {}, [
+        text(node.value ? node.value + '\n' : ''),
+      ]),
+    ]),
   );
 
   return inner;

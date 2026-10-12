@@ -14,6 +14,7 @@ src/
   layouts/                    # BaseLayout (shell) + DocLayout (nav/sidebar/pager)
   pages/                      # index.astro, 404.astro, [...slug].astro (content routes)
   plugins/remark-code.ts      # remark+rehype: fenced code → terminal chrome + copy button
+  styles/code-theme.ts        # Shiki syntax theme (landing API-block palette)
   styles/theme.css            # design tokens and primitives
 ```
 

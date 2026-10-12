@@ -31,7 +31,7 @@
 
   --font-sans: Inter, system-ui, -apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
-  --font-pixel: 'Fixedsys Excelsor', var(--font-mono);
+  --font-pixel: 'Fixedsys Excelsior', var(--font-mono);
 
   --radius: 6px;
   --radius-sm: 3px;
@@ -151,7 +151,6 @@ code {
   border-radius: var(--radius);
   padding: 1rem 1.1rem;
   overflow-x: auto;
-  tabular-nums: normal;
 }
 
 .doc-code pre code {
@@ -162,18 +161,18 @@ code {
   font-size: inherit;
 }
 
-/* terminal header bar for code blocks */
-.doc-code.with-header pre { border-radius: 0 0 var(--radius) var(--radius); margin-top: 30px; }
+/* terminal header bar for code blocks.
+   The header sits in normal flow above the <pre> — an absolutely positioned
+   header plus a top margin on the <pre> margin-collapses through the
+   borderless .doc-code wrapper and paints over the first code line. */
+.doc-code.with-header pre { border-radius: 0 0 var(--radius) var(--radius); }
 .code-header {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
   height: 30px;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0 0.75rem;
+  padding: 0 64px 0 0.75rem;
+  overflow: hidden;
   font-family: var(--font-mono);
   font-size: 11px;
   color: var(--fg-dim);
@@ -196,11 +195,16 @@ code {
   letter-spacing: 0.08em;
 }
 .code-header .path { color: var(--fg-muted); }
+.code-header .title {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
 
 .copy-btn {
   position: absolute;
-  top: 5px;
-  right: 5px;
+  top: 4px;
+  right: 6px;
   z-index: 2;
   font-family: var(--font-mono);
   font-size: 10px;
@@ -212,21 +216,25 @@ code {
   border-radius: var(--radius-sm);
   padding: 4px 8px;
   cursor: pointer;
-  transition: color 0.15s var(--ease-out), border-color 0.15s var(--ease-out);
+  transition: color 0.15s var(--ease-out), border-color 0.15s var(--ease-out), opacity 0.15s var(--ease-out);
 }
 .copy-btn:hover, .copy-btn:focus-visible {
   color: var(--accent-green);
   border-color: var(--green-dim);
   outline: none;
 }
-.doc-code.with-header .copy-btn { top: 35px; }
 
-/* Syntax colors (landing API-block palette) */
-.doc-code .kw { color: var(--accent-green-bright); }
-.doc-code .str { color: var(--accent-green); }
-.doc-code .num { color: var(--accent-yellow); }
-.doc-code .cmt { color: var(--fg-dim); font-style: italic; }
-.doc-code .fn { color: var(--accent-green-bright); }
+/* Plain blocks have no header to host the button — reveal it on hover so it
+   never sits on top of the code. */
+.doc-code:not(.with-header) .copy-btn {
+  top: 8px;
+  right: 8px;
+  opacity: 0;
+}
+.doc-code:not(.with-header):hover .copy-btn,
+.doc-code:not(.with-header) .copy-btn:focus-visible {
+  opacity: 1;
+}
 
 /* ---- Tables ---- */
 table {

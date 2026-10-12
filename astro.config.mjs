@@ -1,5 +1,6 @@
 import { defineConfig } from 'astro/config';
 import { remarkCode, rehypeUnwrapCode } from './src/plugins/remark-code';
+import { codeTheme } from './src/styles/code-theme';
 
 // https://astro.build/config
 export default defineConfig({
@@ -9,5 +10,8 @@ export default defineConfig({
   markdown: {
     remarkPlugins: [remarkCode],
     rehypePlugins: [rehypeUnwrapCode],
+    shikiConfig: {
+      theme: codeTheme,
+    },
   },
 });

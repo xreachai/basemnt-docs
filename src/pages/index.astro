@@ -57,10 +57,10 @@ const { Content } = await render(quickstart);
       Every base/mnt.ai endpoint accepts the same key. Whatever speaks OpenAI or Anthropic
       protocol works unchanged — just change the base URL.
     </p>
-    <Code lang="bash" title="any OpenAI-compatible client">{`export OPENAI_BASE_URL=https://api.basemnt.ai/v1
-export OPENAI_API_KEY=sk-your-key`}</Code>
-    <Code lang="bash" title="any Anthropic-compatible client">{`export ANTHROPIC_BASE_URL=https://api.basemnt.ai
-export ANTHROPIC_API_KEY=sk-your-key`}</Code>
+    <Code lang="bash" title="any OpenAI-compatible client" code={`export OPENAI_BASE_URL=https://api.basemnt.ai/v1
+export OPENAI_API_KEY=sk-your-key`} />
+    <Code lang="bash" title="any Anthropic-compatible client" code={`export ANTHROPIC_BASE_URL=https://api.basemnt.ai
+export ANTHROPIC_API_KEY=sk-your-key`} />
     <div class="snippet-cta">
       <a class="btn btn-primary" href="/agents/">All agent guides →</a>
     </div>

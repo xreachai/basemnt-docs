@@ -1,12 +1,16 @@
 ---
+import { Code as ShikiCode } from 'astro:components';
+import { codeTheme } from '../styles/code-theme';
+
 interface Props {
+  code: string;
+  lang?: string;
   title?: string;
   method?: string;
   path?: string;
-  lang?: string;
 }
 
-const { title, method, path, lang } = Astro.props;
+const { code, lang, title, method, path } = Astro.props;
 ---
 
 <div class:list={['doc-code', { 'with-header': title || method || path }]}>
@@ -19,5 +23,5 @@ const { title, method, path, lang } = Astro.props;
     </div>
   )}
   <button class="copy-btn" type="button" aria-label="Copy code">copy</button>
-  <pre class={lang ? `language-${lang}` : undefined}><slot /></pre>
+  <ShikiCode code={code} lang={lang} theme={codeTheme} />
 </div>
